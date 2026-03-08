@@ -11,4 +11,9 @@ import { PersonAstronaut } from '../../shared/models/person-astronaut';
 })
 export class PersonCardComponent {
   person = input.required<PersonAstronaut>();
+
+  filledStars(): number {
+    const level = this.person()?.currentRankLevel ?? 0;
+    return Math.min(Math.max(0, level), 5);
+  }
 }

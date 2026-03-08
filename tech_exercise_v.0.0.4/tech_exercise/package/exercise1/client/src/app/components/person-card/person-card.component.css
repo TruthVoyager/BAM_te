@@ -20,6 +20,39 @@
   margin-bottom: 0.35rem;
 }
 
+.person-card__stars {
+  display: inline-flex;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.person-card__stars::before {
+  content: '·';
+  margin-right: 0.5rem;
+  font-weight: normal;
+  color: #555;
+}
+
+.person-card__star {
+  display: inline-flex;
+  color: #c9c9c9;
+}
+
+.person-card__star--filled .person-card__star-svg {
+  color: #1820b1;
+}
+
+.person-card__star-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.person-card__star-svg--outline {
+  color: #c9c9c9;
+}
+
 .person-card__meta {
   font-size: 0.95rem;
   color: #555;
@@ -27,16 +60,6 @@
 
 .person-card__title {
   font-weight: 500;
-}
-
-.person-card__rank {
-  margin-left: 0.5rem;
-}
-
-.person-card__rank::before {
-  content: '·';
-  margin-right: 0.5rem;
-  font-weight: normal;
 }
 
 .person-card__no-duty {

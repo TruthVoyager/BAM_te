@@ -35,6 +35,11 @@ namespace StargateAPI.Business.Queries
                         .OrderByDescending(d => d.DutyStartDate)
                         .Select(d => d.Rank != null ? d.Rank.Name : null)
                         .FirstOrDefault() ?? string.Empty,
+                    CurrentRankLevel = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.Rank != null ? d.Rank.Level : 0)
+                        .FirstOrDefault(),
                     CurrentDutyTitle = p.AstronautDuties
                         .Where(d => d.DutyEndDate == null)
                         .OrderByDescending(d => d.DutyStartDate)
