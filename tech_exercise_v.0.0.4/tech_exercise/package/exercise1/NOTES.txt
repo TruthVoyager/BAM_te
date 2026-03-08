@@ -1,0 +1,49 @@
+Front End:
+Pages (Page name (API endpoint)):
+Fancy landing? (not MVP)
+List of all people (Get all people)
+Add person (Add person)
+Person details (retrieve astronaut duty by name, Add an Astronaut duty)
+
+API
+Endpoints:
+Retrieve a person by name.
+Retrieve all people.
+Add person.
+Update a person by name.
+Retrieve Astronaut Duty by name.
+Add an Astronaut Duty.
+
+Tables
+People:
+PersonId
+Name (unique)
+
+AstronautDetail (what to put here?):
+PersonId
+CareerStartDate
+CareerEndDate (nullable)
+
+AstronautDuty:
+PersonId
+DutyId
+Title (The duty title Ex. "Pilot")
+Rank (a precentage from 1-100 based on the completness of the duty. Will be used to "track progress of process".)
+StartDate (indicates when duty began)
+EndDate (nullable, indicates when duty ended)
+
+Questions:
+Q: What does this mean? "Display the progress of the process and the results in a visually sophisticated and appealing manner."
+
+A: There is ambiguity built into the exercise by design. There isn't a right or wrong. If you get stuck and don't know what to do, just go in a direction and be able to speak to it at the tech interview.
+
+Starting code base flaws:
+The GetAstronautDutiesByName action sends GetPersonByName instead of GetAstronautDutiesByName.
+SQL concatenation with user input. This is venerable to sql injections. I chose to use EF core instead of dapper for ease of reading, better security, and consistency. (Could also use Dapper parameters)
+In the GetAstronautDutiesByName query, a potentially null person value is used before a null is checked for. This could cause a null reference error. 
+In AstronautDutyController CreateAstronautDuty not using try/catch.
+In PersonAstronaut CurrentRank and CurrentDutyTitle are non-nullable strings and yet a person can have no astronaut details risking a null reference exception.
+Career end date is set inconsistently depending on if the duty is being created vs updated. 
+In the GetPeople query, the context is set to public read only exposing the DbContext unnecessarily.
+Information leakage in exception messages. 
+App setting "AllowedHosts": "*" should be more restricted for production.

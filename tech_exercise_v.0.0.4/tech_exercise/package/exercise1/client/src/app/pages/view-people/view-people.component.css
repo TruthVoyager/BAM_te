@@ -1,0 +1,41 @@
+.people-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.person-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #1976d2;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.person-button:hover {
+  background: #1565c0;
+}
+
+.error {
+  color: #c62828;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+}
+
+.add-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #2e7d32;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.add-button:hover {
+  background: #1b5e20;
+}

@@ -1,0 +1,22 @@
+<h1>People</h1>
+
+<div class="toolbar">
+  <a routerLink="/add-person" class="add-button">Add Person</a>
+</div>
+
+@if (loading) {
+  <p>Loading…</p>
+} @else if (error) {
+  <p class="error">{{ error }}</p>
+} @else {
+  <div class="people-list">
+    @for (person of people; track person.personId) {
+      <a [routerLink]="['/view-person-details', person.name]" class="person-button">
+        {{ person.name }}
+      </a>
+    }
+    @empty {
+      <p>No people found.</p>
+    }
+  </div>
+}

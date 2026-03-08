@@ -1,0 +1,6 @@
+<div class="duty-card">
+  <div class="field"><span class="label">Duty title:</span> {{ duty().dutyTitle }}</div>
+  <div class="field"><span class="label">Rank:</span> {{ duty().rankName }}</div>
+  <div class="field"><span class="label">Start date:</span> {{ duty().dutyStartDate | date:'mediumDate' }}</div>
+  <div class="field"><span class="label">End date:</span> {{ duty().dutyEndDate ? (duty().dutyEndDate | date:'mediumDate') : 'Current' }}</div>
+</div>

@@ -1,5 +1,5 @@
-﻿using Dapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Dtos;
 using StargateAPI.Controllers;
@@ -14,6 +14,7 @@ namespace StargateAPI.Business.Queries
     public class GetPersonByNameHandler : IRequestHandler<GetPersonByName, GetPersonByNameResult>
     {
         private readonly StargateContext _context;
+
         public GetPersonByNameHandler(StargateContext context)
         {
             _context = context;
@@ -21,15 +22,29 @@ namespace StargateAPI.Business.Queries
 
         public async Task<GetPersonByNameResult> Handle(GetPersonByName request, CancellationToken cancellationToken)
         {
-            var result = new GetPersonByNameResult();
+            var person = await _context.People
+                .AsNoTracking()
+                .Where(p => p.Name == request.Name)
+                .Select(p => new PersonAstronaut
+                {
+                    PersonId = p.Id,
+                    Name = p.Name,
+                    CareerStartDate = p.AstronautDetail != null ? p.AstronautDetail.CareerStartDate : null,
+                    CareerEndDate = p.AstronautDetail != null ? p.AstronautDetail.CareerEndDate : null,
+                    CurrentRank = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.Rank != null ? d.Rank.Name : null)
+                        .FirstOrDefault() ?? string.Empty,
+                    CurrentDutyTitle = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.DutyTitle)
+                        .FirstOrDefault() ?? string.Empty
+                })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            var query = $"SELECT a.Id as PersonId, a.Name, b.CurrentRank, b.CurrentDutyTitle, b.CareerStartDate, b.CareerEndDate FROM [Person] a LEFT JOIN [AstronautDetail] b on b.PersonId = a.Id WHERE '{request.Name}' = a.Name";
-
-            var person = await _context.Connection.QueryAsync<PersonAstronaut>(query);
-
-            result.Person = person.FirstOrDefault();
-
-            return result;
+            return new GetPersonByNameResult { Person = person };
         }
     }
 

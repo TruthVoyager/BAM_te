@@ -1,0 +1,22 @@
+.duty-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: #fafafa;
+}
+
+.person-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.field {
+  margin: 0.25rem 0;
+}
+
+.label {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}

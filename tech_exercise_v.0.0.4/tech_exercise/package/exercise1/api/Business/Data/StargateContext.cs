@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace StargateAPI.Business.Data
 {
     public class StargateContext : DbContext
     {
-        public IDbConnection Connection => Database.GetDbConnection();
         public DbSet<Person> People { get; set; }
         public DbSet<AstronautDetail> AstronautDetails { get; set; }
         public DbSet<AstronautDuty> AstronautDuties { get; set; }
+        public DbSet<Rank> Ranks { get; set; }
+        public DbSet<ProcessLog> ProcessLogs { get; set; }
 
         public StargateContext(DbContextOptions<StargateContext> options)
         : base(options)
@@ -59,7 +59,7 @@ namespace StargateAPI.Business.Data
                         PersonId = 1,
                         DutyStartDate = DateTime.Now,
                         DutyTitle = "Commander",
-                        Rank = "1LT"
+                        RankId = 1
                     }
                 );
         }

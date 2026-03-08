@@ -1,0 +1,112 @@
+<h1>{{ editMode ? 'Edit Person' : 'Add Person' }}</h1>
+
+@if (loadingPerson) {
+  <p>Loading person…</p>
+} @else {
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  <form (ngSubmit)="submit()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input id="name" type="text" [(ngModel)]="name" name="name" required />
+    </div>
+
+    <div class="form-group checkbox-group">
+      <input
+        id="astronaut"
+        type="checkbox"
+        [(ngModel)]="isAstronaut"
+        name="isAstronaut"
+        [disabled]="isAstronautReadonly"
+      />
+      <label for="astronaut">Astronaut</label>
+    </div>
+
+    @if (isAstronaut) {
+      <div class="duty-section">
+        @if (editMode) {
+          @if (dutySectionState === 'readonly') {
+            <div class="form-group">
+              <label>Duty Title</label>
+              <input type="text" [value]="displayDutyTitle" readonly class="readonly" />
+            </div>
+            <div class="form-group">
+              <label>Rank</label>
+              <input type="text" [value]="displayRankName" readonly class="readonly" />
+            </div>
+            @if (currentDuty?.dutyTitle?.toUpperCase() !== 'RETIRED') {
+              <div class="duty-actions">
+                @if (currentDuty) {
+                  <button type="button" (click)="showRetire()" [disabled]="submitting">Retire</button>
+                }
+                <button type="button" (click)="startNewDuty()" [disabled]="submitting">New Duty</button>
+              </div>
+            }
+          } @else if (dutySectionState === 'newDuty') {
+            <div class="form-group">
+              <label for="dutyTitle">Duty Title</label>
+              <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" />
+            </div>
+            <div class="form-group">
+              <label for="rank">Rank</label>
+              @if (loadingRanks) {
+                <p>Loading ranks…</p>
+              } @else {
+                <select id="rank" [(ngModel)]="rankId" name="rankId">
+                  @for (r of ranks; track r.id) {
+                    <option [value]="r.id">{{ r.name }}</option>
+                  }
+                </select>
+              }
+            </div>
+            <div class="form-group">
+              <label for="dutyStartDate">Duty Start Date</label>
+              <input id="dutyStartDate" type="date" [(ngModel)]="dutyStartDate" name="dutyStartDate" />
+            </div>
+            <div class="duty-actions">
+              <button type="button" (click)="cancelDutyEdit()" [disabled]="submitting">Cancel</button>
+            </div>
+          } @else if (dutySectionState === 'retire') {
+            <div class="form-group">
+              <label>Duty Title</label>
+              <input type="text" value="RETIRED" readonly class="readonly" />
+            </div>
+            <div class="form-group">
+              <label>Rank</label>
+              <input type="text" [value]="displayRankName" readonly class="readonly" />
+            </div>
+            <div class="duty-actions">
+              <button type="button" (click)="cancelDutyEdit()" [disabled]="submitting">Cancel</button>
+            </div>
+          }
+        } @else {
+          <div class="form-group">
+            <label for="dutyTitle">Duty Title</label>
+            <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" />
+          </div>
+          <div class="form-group">
+            <label for="rank">Rank</label>
+            @if (loadingRanks) {
+              <p>Loading ranks…</p>
+            } @else {
+              <select id="rank" [(ngModel)]="rankId" name="rankId">
+                @for (r of ranks; track r.id) {
+                  <option [value]="r.id">{{ r.name }}</option>
+                }
+              </select>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div class="actions">
+      <button type="submit" [disabled]="submitting">
+        {{ submitting ? (editMode ? 'Saving…' : 'Creating…') : (editMode ? 'Save' : 'Create') }}
+      </button>
+      <button type="button" (click)="cancel()" [disabled]="submitting">Cancel</button>
+    </div>
+  </form>
+}

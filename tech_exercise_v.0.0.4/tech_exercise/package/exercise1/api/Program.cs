@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Commands;
 using StargateAPI.Business.Data;
+using StargateAPI.Business.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<StargateContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("StarbaseApiDatabase")));
 
+builder.Services.AddScoped<IProcessLogService, ProcessLogService>();
+
 builder.Services.AddMediatR(cfg =>
 {
     cfg.AddRequestPreProcessor<CreateAstronautDutyPreProcessor>();
@@ -42,6 +45,8 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseAuthorization();
+
+app.UseMiddleware<StargateAPI.Middleware.ProcessLoggingMiddleware>();
 
 app.MapControllers();
 

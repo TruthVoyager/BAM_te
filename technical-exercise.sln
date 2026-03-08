@@ -1,0 +1,66 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tech_exercise_v.0.0.4", "tech_exercise_v.0.0.4", "{A1983FB8-5B7E-9270-C528-4D0F490F5CD6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tech_exercise", "tech_exercise", "{30775A99-4FD7-6AFA-85FB-1610D20BD7D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{9E6220D3-911C-916A-BD87-BAAD72F28ADD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "exercise1", "exercise1", "{8517C37E-25A9-8989-6959-AB1434D8D04D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{0D890B90-0367-B512-97DE-7EB6415EAF0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StargateAPI", "tech_exercise_v.0.0.4\tech_exercise\package\exercise1\api\StargateAPI.csproj", "{F972C1FB-D015-4134-A871-09788796B1CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StargateAPI.Tests", "tech_exercise_v.0.0.4\tech_exercise\package\exercise1\StargateAPI.Tests\StargateAPI.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|x64.Build.0 = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|x64.ActiveCfg = Release|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|x64.Build.0 = Release|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{F972C1FB-D015-4134-A871-09788796B1CD}.Release|x86.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x86.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x86.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{30775A99-4FD7-6AFA-85FB-1610D20BD7D4} = {A1983FB8-5B7E-9270-C528-4D0F490F5CD6}
+		{9E6220D3-911C-916A-BD87-BAAD72F28ADD} = {30775A99-4FD7-6AFA-85FB-1610D20BD7D4}
+		{8517C37E-25A9-8989-6959-AB1434D8D04D} = {9E6220D3-911C-916A-BD87-BAAD72F28ADD}
+		{0D890B90-0367-B512-97DE-7EB6415EAF0D} = {8517C37E-25A9-8989-6959-AB1434D8D04D}
+		{F972C1FB-D015-4134-A871-09788796B1CD} = {0D890B90-0367-B512-97DE-7EB6415EAF0D}
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {8517C37E-25A9-8989-6959-AB1434D8D04D}
+	EndGlobalSection
+EndGlobal

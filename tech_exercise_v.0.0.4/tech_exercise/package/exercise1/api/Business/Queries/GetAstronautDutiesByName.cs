@@ -1,5 +1,5 @@
-﻿using Dapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Dtos;
 using StargateAPI.Controllers;
@@ -22,29 +22,59 @@ namespace StargateAPI.Business.Queries
 
         public async Task<GetAstronautDutiesByNameResult> Handle(GetAstronautDutiesByName request, CancellationToken cancellationToken)
         {
+            var person = await _context.People
+                .AsNoTracking()
+                .Where(p => p.Name == request.Name)
+                .Select(p => new PersonAstronaut
+                {
+                    PersonId = p.Id,
+                    Name = p.Name,
+                    CareerStartDate = p.AstronautDetail != null ? p.AstronautDetail.CareerStartDate : null,
+                    CareerEndDate = p.AstronautDetail != null ? p.AstronautDetail.CareerEndDate : null,
+                    CurrentRank = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.Rank != null ? d.Rank.Name : null)
+                        .FirstOrDefault() ?? string.Empty,
+                    CurrentDutyTitle = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.DutyTitle)
+                        .FirstOrDefault() ?? string.Empty
+                })
+                .FirstOrDefaultAsync(cancellationToken);
 
-            var result = new GetAstronautDutiesByNameResult();
+            if (person is null)
+                return new GetAstronautDutiesByNameResult { Person = null, AstronautDuties = new List<AstronautDutyDto>() };
 
-            var query = $"SELECT a.Id as PersonId, a.Name, b.CurrentRank, b.CurrentDutyTitle, b.CareerStartDate, b.CareerEndDate FROM [Person] a LEFT JOIN [AstronautDetail] b on b.PersonId = a.Id WHERE \'{request.Name}\' = a.Name";
+            var duties = await _context.AstronautDuties
+                .AsNoTracking()
+                .Where(d => d.PersonId == person.PersonId)
+                .OrderByDescending(d => d.DutyStartDate)
+                .Select(d => new AstronautDutyDto
+                {
+                    Id = d.Id,
+                    PersonId = d.PersonId,
+                    RankId = d.RankId,
+                    RankLevel = d.Rank != null ? d.Rank.Level : 0,
+                    RankName = d.Rank != null ? d.Rank.Name : string.Empty,
+                    DutyTitle = d.DutyTitle,
+                    DutyStartDate = d.DutyStartDate,
+                    DutyEndDate = d.DutyEndDate
+                })
+                .ToListAsync(cancellationToken);
 
-            var person = await _context.Connection.QueryFirstOrDefaultAsync<PersonAstronaut>(query);
-
-            result.Person = person;
-
-            query = $"SELECT * FROM [AstronautDuty] WHERE {person.PersonId} = PersonId Order By DutyStartDate Desc";
-
-            var duties = await _context.Connection.QueryAsync<AstronautDuty>(query);
-
-            result.AstronautDuties = duties.ToList();
-
-            return result;
-
+            return new GetAstronautDutiesByNameResult
+            {
+                Person = person,
+                AstronautDuties = duties
+            };
         }
     }
 
     public class GetAstronautDutiesByNameResult : BaseResponse
     {
-        public PersonAstronaut Person { get; set; }
-        public List<AstronautDuty> AstronautDuties { get; set; } = new List<AstronautDuty>();
+        public PersonAstronaut? Person { get; set; }
+        public List<AstronautDutyDto> AstronautDuties { get; set; } = new List<AstronautDutyDto>();
     }
 }

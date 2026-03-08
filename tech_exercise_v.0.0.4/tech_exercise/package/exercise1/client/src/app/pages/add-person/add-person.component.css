@@ -1,0 +1,97 @@
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  width: 100%;
+  max-width: 20rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actions button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.actions button[type="submit"] {
+  background: #1976d2;
+  color: white;
+  border: none;
+}
+
+.actions button[type="submit"]:hover:not(:disabled) {
+  background: #1565c0;
+}
+
+.actions button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.actions button[type="button"] {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+}
+
+.actions button[type="button"]:hover:not(:disabled) {
+  background: #eee;
+}
+
+.error {
+  color: #c62828;
+  margin-bottom: 1rem;
+}
+
+.duty-section {
+  margin-top: 0.5rem;
+}
+
+.duty-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.duty-actions button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+}
+
+.duty-actions button:hover:not(:disabled) {
+  background: #eee;
+}
+
+.readonly {
+  background: #eee;
+  cursor: not-allowed;
+}

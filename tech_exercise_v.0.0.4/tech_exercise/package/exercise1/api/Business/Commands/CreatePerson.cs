@@ -1,5 +1,6 @@
-﻿using MediatR;
+using MediatR;
 using MediatR.Pipeline;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Controllers;
@@ -22,7 +23,8 @@ namespace StargateAPI.Business.Commands
         {
             var person = _context.People.AsNoTracking().FirstOrDefault(z => z.Name == request.Name);
 
-            if (person is not null) throw new BadHttpRequestException("Bad Request");
+            if (person is not null)
+                throw new BadHttpRequestException("A person with this name already exists.", StatusCodes.Status409Conflict);
 
             return Task.CompletedTask;
         }

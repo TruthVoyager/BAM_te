@@ -6,5 +6,9 @@
   "/AstronautDuty": {
     "target": "http://localhost:5204",
     "secure": false
+  },
+  "/Rank": {
+    "target": "http://localhost:5204",
+    "secure": false
   }
 }

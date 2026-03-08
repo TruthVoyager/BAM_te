@@ -1,20 +1,24 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StargateAPI.Business.Commands;
 using StargateAPI.Business.Queries;
-using System.Net;
+using StargateAPI.Business.Services;
 
 namespace StargateAPI.Controllers
 {
-   
     [ApiController]
     [Route("[controller]")]
     public class PersonController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public PersonController(IMediator mediator)
+        private readonly ILogger<PersonController> _logger;
+        private readonly IProcessLogService _processLog;
+
+        public PersonController(IMediator mediator, ILogger<PersonController> logger, IProcessLogService processLog)
         {
             _mediator = mediator;
+            _logger = logger;
+            _processLog = processLog;
         }
 
         [HttpGet("")]
@@ -22,21 +26,15 @@ namespace StargateAPI.Controllers
         {
             try
             {
-                var result = await _mediator.Send(new GetPeople()
-                {
-
-                });
+                var result = await _mediator.Send(new GetPeople() { });
 
                 return this.GetResponse(result);
             }
             catch (Exception ex)
             {
-                return this.GetResponse(new BaseResponse()
-                {
-                    Message = ex.Message,
-                    Success = false,
-                    ResponseCode = (int)HttpStatusCode.InternalServerError
-                });
+                var response = ex.ToSafeResponse(_logger);
+                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                return this.GetResponse(response);
             }
         }
 
@@ -45,21 +43,15 @@ namespace StargateAPI.Controllers
         {
             try
             {
-                var result = await _mediator.Send(new GetPersonByName()
-                {
-                    Name = name
-                });
+                var result = await _mediator.Send(new GetPersonByName() { Name = name });
 
                 return this.GetResponse(result);
             }
             catch (Exception ex)
             {
-                return this.GetResponse(new BaseResponse()
-                {
-                    Message = ex.Message,
-                    Success = false,
-                    ResponseCode = (int)HttpStatusCode.InternalServerError
-                });
+                var response = ex.ToSafeResponse(_logger);
+                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                return this.GetResponse(response);
             }
         }
 
@@ -68,23 +60,37 @@ namespace StargateAPI.Controllers
         {
             try
             {
-                var result = await _mediator.Send(new CreatePerson()
+                var result = await _mediator.Send(new CreatePerson() { Name = name });
+
+                return this.GetResponse(result);
+            }
+            catch (Exception ex)
+            {
+                var response = ex.ToSafeResponse(_logger);
+                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                return this.GetResponse(response);
+            }
+        }
+
+        [HttpPut("{currentName}")]
+        public async Task<IActionResult> UpdatePerson(string currentName, [FromBody] string newName)
+        {
+            try
+            {
+                var result = await _mediator.Send(new UpdatePerson()
                 {
-                    Name = name
+                    CurrentName = currentName,
+                    NewName = newName ?? string.Empty
                 });
 
                 return this.GetResponse(result);
             }
             catch (Exception ex)
             {
-                return this.GetResponse(new BaseResponse()
-                {
-                    Message = ex.Message,
-                    Success = false,
-                    ResponseCode = (int)HttpStatusCode.InternalServerError
-                });
+                var response = ex.ToSafeResponse(_logger);
+                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                return this.GetResponse(response);
             }
-
         }
     }
 }

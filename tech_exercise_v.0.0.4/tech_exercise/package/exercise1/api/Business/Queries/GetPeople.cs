@@ -1,5 +1,5 @@
-﻿using Dapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Dtos;
 using StargateAPI.Controllers;
@@ -13,28 +13,42 @@ namespace StargateAPI.Business.Queries
 
     public class GetPeopleHandler : IRequestHandler<GetPeople, GetPeopleResult>
     {
-        public readonly StargateContext _context;
+        private readonly StargateContext _context;
+
         public GetPeopleHandler(StargateContext context)
         {
             _context = context;
         }
+
         public async Task<GetPeopleResult> Handle(GetPeople request, CancellationToken cancellationToken)
         {
-            var result = new GetPeopleResult();
+            var people = await _context.People
+                .AsNoTracking()
+                .Select(p => new PersonAstronaut
+                {
+                    PersonId = p.Id,
+                    Name = p.Name,
+                    CareerStartDate = p.AstronautDetail != null ? p.AstronautDetail.CareerStartDate : null,
+                    CareerEndDate = p.AstronautDetail != null ? p.AstronautDetail.CareerEndDate : null,
+                    CurrentRank = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.Rank != null ? d.Rank.Name : null)
+                        .FirstOrDefault() ?? string.Empty,
+                    CurrentDutyTitle = p.AstronautDuties
+                        .Where(d => d.DutyEndDate == null)
+                        .OrderByDescending(d => d.DutyStartDate)
+                        .Select(d => d.DutyTitle)
+                        .FirstOrDefault() ?? string.Empty
+                })
+                .ToListAsync(cancellationToken);
 
-            var query = $"SELECT a.Id as PersonId, a.Name, b.CurrentRank, b.CurrentDutyTitle, b.CareerStartDate, b.CareerEndDate FROM [Person] a LEFT JOIN [AstronautDetail] b on b.PersonId = a.Id";
-
-            var people = await _context.Connection.QueryAsync<PersonAstronaut>(query);
-
-            result.People = people.ToList();
-
-            return result;
+            return new GetPeopleResult { People = people };
         }
     }
 
     public class GetPeopleResult : BaseResponse
     {
-        public List<PersonAstronaut> People { get; set; } = new List<PersonAstronaut> { };
-
+        public List<PersonAstronaut> People { get; set; } = new List<PersonAstronaut>();
     }
 }

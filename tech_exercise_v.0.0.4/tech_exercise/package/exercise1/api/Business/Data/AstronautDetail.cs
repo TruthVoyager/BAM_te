@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,16 +11,11 @@ namespace StargateAPI.Business.Data
 
         public int PersonId { get; set; }
 
-        /*Removing these because they are uneeded redundant data. Yuck*/
-        //public string CurrentRank { get; set; } = string.Empty;
-
-        //public string CurrentDutyTitle { get; set; } = string.Empty;
-
-        public DateTime CareerStartDate { get; set; }
+        public DateTime? CareerStartDate { get; set; }
 
         public DateTime? CareerEndDate { get; set; }
 
-        public virtual Person Person { get; set; }
+        public virtual Person? Person { get; set; }
     }
 
     public class AstronautDetailConfiguration : IEntityTypeConfiguration<AstronautDetail>

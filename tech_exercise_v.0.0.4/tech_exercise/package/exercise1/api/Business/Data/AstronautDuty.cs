@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,7 +11,7 @@ namespace StargateAPI.Business.Data
 
         public int PersonId { get; set; }
 
-        public string Rank { get; set; } = string.Empty;
+        public int RankId { get; set; }
 
         public string DutyTitle { get; set; } = string.Empty;
 
@@ -19,7 +19,8 @@ namespace StargateAPI.Business.Data
 
         public DateTime? DutyEndDate { get; set; }
 
-        public virtual Person Person { get; set; }
+        public virtual Person? Person { get; set; }
+        public virtual Rank? Rank { get; set; }
     }
 
     public class AstronautDutyConfiguration : IEntityTypeConfiguration<AstronautDuty>
@@ -28,6 +29,10 @@ namespace StargateAPI.Business.Data
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
+            builder.HasOne(x => x.Rank)
+                .WithMany()
+                .HasForeignKey(x => x.RankId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
