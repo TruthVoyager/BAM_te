@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <RootNamespace>StargateAPI.Tests</RootNamespace>
+    <!-- For coverage: use settings coverlet.runsettings and collect XPlat Code Coverage -->
   </PropertyGroup>
 
   <ItemGroup>

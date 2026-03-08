@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StargateAPI.Migrations
 {
     /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public partial class RemoveAstronautDetailCurrentRankAndTitle : Migration
     {
         /// <inheritdoc />

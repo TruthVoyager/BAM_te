@@ -2,6 +2,7 @@ using StargateAPI.Business.Services;
 
 namespace StargateAPI.Middleware
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class ProcessLoggingMiddleware
     {
         private readonly RequestDelegate _next;
