@@ -1,1 +1,145 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Stable viewport for fixed bottom bar on mobile */
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  position: relative;
+}
+
+.page-content {
+  width: 33.333%;
+  min-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+}
+
+.page-content:has(.page-actions) {
+  padding-top: 1rem;
+  padding-bottom: 5rem;
+}
+
+.page-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.page-actions__inner {
+  position: relative;
+  width: 33.333%;
+  min-width: 400px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-actions__secondary {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+}
+
+.page-actions__secondary:empty {
+  display: none;
+}
+
+.page-actions__primary {
+  
+}
+
+.page-actions__primary a,
+.page-actions__primary button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  display: inline-block;
+  background: #1820b1;
+  color: white;
+}
+
+.page-actions__primary a:hover,
+.page-actions__primary button:hover:not(:disabled) {
+  background: #3f45b1;
+  color: white;
+}
+
+.page-actions__secondary-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  color: #555;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  border-radius: 6px;
+}
+
+.page-actions__secondary-btn:hover:not(:disabled) {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.page-actions__secondary .page-actions__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.page-actions__secondary .page-actions__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+.page-actions button:disabled,
+.page-actions a[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+button{
+  font-family: 'Roboto', sans-serif;
+}
+
+a{
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Required field indicator (red asterisk) */
+.required-indicator {
+  color: #c62828;
+  font-weight: normal;
+  margin-left: 0.15em;
+}

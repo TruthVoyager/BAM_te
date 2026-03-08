@@ -1,0 +1,45 @@
+.person-card {
+  display: block;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.person-card:hover {
+  background: #f8f9fa;
+  border-color: #1820b1;
+}
+
+.person-card__name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.person-card__meta {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.person-card__title {
+  font-weight: 500;
+}
+
+.person-card__rank {
+  margin-left: 0.5rem;
+}
+
+.person-card__rank::before {
+  content: '·';
+  margin-right: 0.5rem;
+  font-weight: normal;
+}
+
+.person-card__no-duty {
+  font-style: italic;
+  color: #888;
+}

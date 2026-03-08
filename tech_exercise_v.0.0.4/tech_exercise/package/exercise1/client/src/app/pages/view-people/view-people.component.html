@@ -1,22 +1,26 @@
-<h1>People</h1>
+<div class="page-content">
 
-<div class="toolbar">
-  <a routerLink="/add-person" class="add-button">Add Person</a>
-</div>
+  @if (loading) {
+    <app-loading-spinner message="Loading…" />
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else {
+    <div class="people-list">
+      @for (person of people; track person.personId) {
+        <app-person-card [person]="person" />
+      }
+      @empty {
+        <p>No people found.</p>
+      }
+    </div>
+  }
 
-@if (loading) {
-  <p>Loading…</p>
-} @else if (error) {
-  <p class="error">{{ error }}</p>
-} @else {
-  <div class="people-list">
-    @for (person of people; track person.personId) {
-      <a [routerLink]="['/view-person-details', person.name]" class="person-button">
-        {{ person.name }}
-      </a>
-    }
-    @empty {
-      <p>No people found.</p>
-    }
+  <div class="page-actions">
+    <div class="page-actions__inner">
+      <div class="page-actions__secondary"></div>
+        <div class="page-actions__primary">
+          <a routerLink="/add-person">Add Person</a>
+        </div>
+    </div>
   </div>
-}
+</div>

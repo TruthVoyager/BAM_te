@@ -31,7 +31,8 @@ namespace StargateAPI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to load ranks: {Message}", ex.Message);
-                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, 500);
+                try { await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, 500); }
+                catch (Exception logEx) { _logger.LogWarning(logEx, "Failed to write exception to ProcessLog"); }
                 return StatusCode(500, new { message = "An error occurred while loading ranks." });
             }
         }

@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PersonService } from '../../shared/services/person.service';
@@ -9,12 +9,13 @@ import { RankService } from '../../shared/services/rank.service';
 import { AstronautDutyService } from '../../shared/services/astronaut-duty.service';
 import { Rank } from '../../shared/models/rank';
 import { AstronautDuty } from '../../shared/models/astronaut-duty';
+import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
 
-type DutySectionState = 'readonly' | 'newDuty' | 'retire';
+type DutySectionState = 'readonly' | 'newDuty' | 'retire' | 'promote';
 
 @Component({
   selector: 'app-add-person',
-  imports: [FormsModule],
+  imports: [FormsModule, LoadingSpinnerComponent],
   templateUrl: './add-person.component.html',
   styleUrl: './add-person.component.css',
 })
@@ -39,6 +40,8 @@ export class AddPersonComponent implements OnInit, OnDestroy {
   isAstronautReadonly = false;
 
   private readonly destroy$ = new Subject<void>();
+
+  @ViewChild('addPersonForm') addPersonFormRef: NgForm | null = null;
 
   constructor(
     private readonly location: Location,
@@ -134,10 +137,24 @@ export class AddPersonComponent implements OnInit, OnDestroy {
   get isDutyReadonly(): boolean {
     return this.dutySectionState === 'readonly' || this.dutySectionState === 'retire';
   }
+  get isDutyFieldsRequired(): boolean {
+    return this.isAstronaut && (this.dutySectionState === 'newDuty' || !this.editMode);
+  }
+
+  get isPromoteRankRequired(): boolean {
+    return this.isAstronaut && this.dutySectionState === 'promote';
+  }
+
+  get isSubmitDisabled(): boolean {
+    if (this.submitting) return true;
+    if (this.loadingRanks && (this.isDutyFieldsRequired || this.isPromoteRankRequired)) return true;
+    if (this.dutySectionState === 'promote' && (this.rankId == null || this.rankId === this.currentDuty?.rankId)) return true;
+    return this.addPersonFormRef?.invalid ?? true;
+  }
 
   get displayDutyTitle(): string {
     if (this.dutySectionState === 'retire') return 'RETIRED';
-    if (this.dutySectionState === 'readonly' && this.currentDuty) return this.currentDuty.dutyTitle;
+    if ((this.dutySectionState === 'readonly' || this.dutySectionState === 'promote') && this.currentDuty) return this.currentDuty.dutyTitle;
     return this.dutyTitle;
   }
 
@@ -189,6 +206,11 @@ export class AddPersonComponent implements OnInit, OnDestroy {
     this.dutySectionState = 'retire';
     this.dutyTitle = 'RETIRED';
     this.rankId = this.highestRankId;
+  }
+
+  showPromote(): void {
+    this.dutySectionState = 'promote';
+    this.rankId = this.currentDuty?.rankId ?? this.rankId;
   }
 
   cancelDutyEdit(): void {
@@ -251,6 +273,14 @@ export class AddPersonComponent implements OnInit, OnDestroy {
       this.error = 'Duty title and rank are required for new duty';
       return;
     }
+    if (this.isAstronaut && this.dutySectionState === 'promote' && (this.rankId == null || this.currentDuty == null)) {
+      this.error = 'Select a new rank to promote.';
+      return;
+    }
+    if (this.isAstronaut && this.dutySectionState === 'retire' && this.highestRankId == null) {
+      this.error = 'Unable to determine rank for retirement. Please refresh and try again.';
+      return;
+    }
     this.error = null;
     this.submitting = true;
 
@@ -271,7 +301,9 @@ export class AddPersonComponent implements OnInit, OnDestroy {
                   dutyTitle: this.dutyTitle.trim(),
                   dutyStartDate: this.dutyStartDate || new Date().toISOString().slice(0, 10),
                 })
-              : null;
+              : this.isAstronaut && this.dutySectionState === 'promote' && this.currentDuty != null && this.rankId != null && this.rankId !== this.currentDuty.rankId
+                ? this.astronautDutyService.updateDutyRank(this.currentDuty.id, Number(this.rankId))
+                : null;
 
         if (nextOp) {
           nextOp.subscribe({

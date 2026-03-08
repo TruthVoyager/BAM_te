@@ -4,10 +4,11 @@ import { AstronautDutyService } from '../../shared/services/astronaut-duty.servi
 import { AstronautDuty } from '../../shared/models/astronaut-duty';
 import { PersonAstronaut } from '../../shared/models/person-astronaut';
 import { DutyCardComponent } from '../../components/duty-card/duty-card.component';
+import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-view-person-details',
-  imports: [RouterLink, DutyCardComponent],
+  imports: [RouterLink, DutyCardComponent, LoadingSpinnerComponent],
   templateUrl: './view-person-details.component.html',
   styleUrl: './view-person-details.component.css',
 })

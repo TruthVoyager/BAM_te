@@ -1,15 +1,16 @@
-<h1>{{ editMode ? 'Edit Person' : 'Add Person' }}</h1>
+<div class="page-content">
+  <h1>{{ editMode ? 'Edit Person' : 'Add Person' }}</h1>
 
-@if (loadingPerson) {
-  <p>Loading person…</p>
-} @else {
-  @if (error) {
-    <p class="error">{{ error }}</p>
-  }
+  @if (loadingPerson) {
+    <app-loading-spinner message="Loading person…" />
+  } @else {
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
 
-  <form (ngSubmit)="submit()">
+    <form id="add-person-form" #addPersonForm="ngForm" (ngSubmit)="submit()">
     <div class="form-group">
-      <label for="name">Name</label>
+      <label for="name">Name<span class="required-indicator" aria-hidden="true">*</span></label>
       <input id="name" type="text" [(ngModel)]="name" name="name" required />
     </div>
 
@@ -42,19 +43,22 @@
                   <button type="button" (click)="showRetire()" [disabled]="submitting">Retire</button>
                 }
                 <button type="button" (click)="startNewDuty()" [disabled]="submitting">New Duty</button>
+                @if (currentDuty) {
+                  <button type="button" (click)="showPromote()" [disabled]="submitting">Promote</button>
+                }
               </div>
             }
-          } @else if (dutySectionState === 'newDuty') {
+          } @else if (dutySectionState === 'promote') {
             <div class="form-group">
-              <label for="dutyTitle">Duty Title</label>
-              <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" />
+              <label>Duty Title</label>
+              <input type="text" [value]="displayDutyTitle" readonly class="readonly" />
             </div>
             <div class="form-group">
-              <label for="rank">Rank</label>
+              <label for="rankPromote">Rank<span class="required-indicator" aria-hidden="true">*</span></label>
               @if (loadingRanks) {
-                <p>Loading ranks…</p>
+                <app-loading-spinner message="Loading ranks…" />
               } @else {
-                <select id="rank" [(ngModel)]="rankId" name="rankId">
+                <select id="rankPromote" [(ngModel)]="rankId" name="rankIdPromote">
                   @for (r of ranks; track r.id) {
                     <option [value]="r.id">{{ r.name }}</option>
                   }
@@ -62,8 +66,32 @@
               }
             </div>
             <div class="form-group">
-              <label for="dutyStartDate">Duty Start Date</label>
-              <input id="dutyStartDate" type="date" [(ngModel)]="dutyStartDate" name="dutyStartDate" />
+              <label>Duty Start Date</label>
+              <input type="text" [value]="(currentDuty?.dutyStartDate ?? '').toString().slice(0, 10)" readonly class="readonly" />
+            </div>
+            <div class="duty-actions">
+              <button type="button" (click)="cancelDutyEdit()" [disabled]="submitting">Cancel</button>
+            </div>
+          } @else if (dutySectionState === 'newDuty') {
+            <div class="form-group">
+              <label for="dutyTitle">Duty Title<span class="required-indicator" aria-hidden="true">*</span></label>
+              <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" [required]="isDutyFieldsRequired" />
+            </div>
+            <div class="form-group">
+              <label for="rank">Rank<span class="required-indicator" aria-hidden="true">*</span></label>
+              @if (loadingRanks) {
+                <app-loading-spinner message="Loading ranks…" />
+              } @else {
+                <select id="rank" [(ngModel)]="rankId" name="rankId" [required]="isDutyFieldsRequired">
+                  @for (r of ranks; track r.id) {
+                    <option [value]="r.id">{{ r.name }}</option>
+                  }
+                </select>
+              }
+            </div>
+            <div class="form-group">
+              <label for="dutyStartDate">Duty Start Date<span class="required-indicator" aria-hidden="true">*</span></label>
+              <input id="dutyStartDate" type="date" [(ngModel)]="dutyStartDate" name="dutyStartDate" [required]="isDutyFieldsRequired" />
             </div>
             <div class="duty-actions">
               <button type="button" (click)="cancelDutyEdit()" [disabled]="submitting">Cancel</button>
@@ -83,15 +111,15 @@
           }
         } @else {
           <div class="form-group">
-            <label for="dutyTitle">Duty Title</label>
-            <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" />
+            <label for="dutyTitle">Duty Title<span class="required-indicator" aria-hidden="true">*</span></label>
+            <input id="dutyTitle" type="text" [(ngModel)]="dutyTitle" name="dutyTitle" [required]="isDutyFieldsRequired" />
           </div>
           <div class="form-group">
-            <label for="rank">Rank</label>
+            <label for="rank">Rank<span class="required-indicator" aria-hidden="true">*</span></label>
             @if (loadingRanks) {
-              <p>Loading ranks…</p>
+              <app-loading-spinner message="Loading ranks…" />
             } @else {
-              <select id="rank" [(ngModel)]="rankId" name="rankId">
+              <select id="rank" [(ngModel)]="rankId" name="rankId" [required]="isDutyFieldsRequired">
                 @for (r of ranks; track r.id) {
                   <option [value]="r.id">{{ r.name }}</option>
                 }
@@ -101,12 +129,23 @@
         }
       </div>
     }
-
-    <div class="actions">
-      <button type="submit" [disabled]="submitting">
-        {{ submitting ? (editMode ? 'Saving…' : 'Creating…') : (editMode ? 'Save' : 'Create') }}
-      </button>
-      <button type="button" (click)="cancel()" [disabled]="submitting">Cancel</button>
-    </div>
   </form>
 }
+  <div class="page-actions">
+    <div class="page-actions__inner">
+      <div class="page-actions__secondary">
+        <button type="button" (click)="cancel()" [disabled]="submitting" class="page-actions__secondary-btn" aria-label="Cancel">
+          <span class="page-actions__icon" aria-hidden="true">×</span>
+          <span class="page-actions__label">Cancel</span>
+        </button>
+      </div>
+      @if (!loadingPerson) {
+        <div class="page-actions__primary">
+          <button type="submit" form="add-person-form" [disabled]="isSubmitDisabled">
+            {{ submitting ? (editMode ? 'Saving…' : 'Creating…') : (editMode ? 'Save' : 'Create') }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

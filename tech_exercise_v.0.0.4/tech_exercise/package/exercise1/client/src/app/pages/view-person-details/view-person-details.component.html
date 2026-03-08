@@ -1,33 +1,45 @@
-<a routerLink="/view-people" class="back-link">← Back to people</a>
+<div class="page-content">
+  @if (loading) {
+    <app-loading-spinner message="Loading…" />
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (person) {
+    <h1>{{ person.name }}</h1>
 
-@if (loading) {
-  <p>Loading…</p>
-} @else if (error) {
-  <p class="error">{{ error }}</p>
-} @else if (person) {
-  <h1>{{ person.name }}</h1>
+    @if (currentDuty) {
+      <section>
+        <h2>Current duty</h2>
+        <app-duty-card [duty]="currentDuty" />
+      </section>
+    }
 
-  <p>
-    <a [routerLink]="['/edit-person', person.name]" class="edit-link">Edit</a>
-  </p>
+    @if (pastDuties.length > 0) {
+      <section>
+        <h2>Past duties</h2>
+        @for (duty of pastDuties; track duty.id) {
+          <app-duty-card [duty]="duty" />
+        }
+      </section>
+    }
 
-  @if (currentDuty) {
-    <section>
-      <h2>Current duty</h2>
-      <app-duty-card [duty]="currentDuty" [personName]="person.name" />
-    </section>
+    @if (!currentDuty && pastDuties.length === 0) {
+      <p>No duty history.</p>
+    }
   }
 
-  @if (pastDuties.length > 0) {
-    <section>
-      <h2>Past duties</h2>
-      @for (duty of pastDuties; track duty.id) {
-        <app-duty-card [duty]="duty" />
+  <div class="page-actions">
+    <div class="page-actions__inner">
+      <div class="page-actions__secondary">
+        <a routerLink="/view-people" class="page-actions__secondary-btn" aria-label="Back to people">
+          <span class="page-actions__icon" aria-hidden="true">←</span>
+          <span class="page-actions__label">back</span>
+        </a>
+      </div>
+      @if (person) {
+        <div class="page-actions__primary">
+          <a [routerLink]="['/edit-person', person.name]">Edit</a>
+        </div>
       }
-    </section>
-  }
-
-  @if (!currentDuty && pastDuties.length === 0) {
-    <p>No duty history.</p>
-  }
-}
+    </div>
+  </div>
+</div>

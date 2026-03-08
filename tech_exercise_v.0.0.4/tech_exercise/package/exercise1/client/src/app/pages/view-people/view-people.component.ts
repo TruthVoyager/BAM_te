@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PersonService } from '../../shared/services/person.service';
 import { PersonAstronaut } from '../../shared/models/person-astronaut';
+import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
+import { PersonCardComponent } from '../../components/person-card/person-card.component';
 
 @Component({
   selector: 'app-view-people',
-  imports: [RouterLink],
+  imports: [RouterLink, LoadingSpinnerComponent, PersonCardComponent],
   templateUrl: './view-people.component.html',
   styleUrl: './view-people.component.css',
 })

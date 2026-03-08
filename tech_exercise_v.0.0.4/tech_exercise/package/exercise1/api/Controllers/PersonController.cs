@@ -33,7 +33,8 @@ namespace StargateAPI.Controllers
             catch (Exception ex)
             {
                 var response = ex.ToSafeResponse(_logger);
-                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                try { await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode); }
+                catch (Exception logEx) { _logger.LogWarning(logEx, "Failed to write exception to ProcessLog"); }
                 return this.GetResponse(response);
             }
         }
@@ -50,7 +51,8 @@ namespace StargateAPI.Controllers
             catch (Exception ex)
             {
                 var response = ex.ToSafeResponse(_logger);
-                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                try { await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode); }
+                catch (Exception logEx) { _logger.LogWarning(logEx, "Failed to write exception to ProcessLog"); }
                 return this.GetResponse(response);
             }
         }
@@ -67,7 +69,8 @@ namespace StargateAPI.Controllers
             catch (Exception ex)
             {
                 var response = ex.ToSafeResponse(_logger);
-                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                try { await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode); }
+                catch (Exception logEx) { _logger.LogWarning(logEx, "Failed to write exception to ProcessLog"); }
                 return this.GetResponse(response);
             }
         }
@@ -88,7 +91,8 @@ namespace StargateAPI.Controllers
             catch (Exception ex)
             {
                 var response = ex.ToSafeResponse(_logger);
-                await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode);
+                try { await _processLog.LogExceptionAsync(ex, HttpContext.Request.Path, HttpContext.Request.Method, response.ResponseCode); }
+                catch (Exception logEx) { _logger.LogWarning(logEx, "Failed to write exception to ProcessLog"); }
                 return this.GetResponse(response);
             }
         }

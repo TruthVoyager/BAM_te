@@ -1,5 +1,6 @@
 using MediatR;
 using MediatR.Pipeline;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Controllers;
@@ -57,6 +58,13 @@ namespace StargateAPI.Business.Commands
             var person = await _context.People.FirstOrDefaultAsync(p => p.Name == request.Name, cancellationToken);
             if (person is null)
                 throw new InvalidOperationException("Person not found.");
+
+            if (request.RankId <= 0)
+                throw new BadHttpRequestException("A valid rank is required.", StatusCodes.Status400BadRequest);
+
+            var rankExists = await _context.Ranks.AnyAsync(r => r.Id == request.RankId, cancellationToken);
+            if (!rankExists)
+                throw new BadHttpRequestException("The selected rank was not found.", StatusCodes.Status400BadRequest);
 
             var requestedStart = request.DutyStartDate.Date;
             var today = DateTime.Today;

@@ -25,4 +25,8 @@ export class AstronautDutyService {
   createDuty(request: CreateAstronautDutyRequest): Observable<unknown> {
     return this.http.post<unknown>(this.baseUrl, request);
   }
+
+  updateDutyRank(dutyId: number, rankId: number): Observable<unknown> {
+    return this.http.put<unknown>(`${this.baseUrl}/${dutyId}/rank`, { rankId });
+  }
 }

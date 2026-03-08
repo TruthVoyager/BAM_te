@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Dtos;
@@ -22,6 +23,9 @@ namespace StargateAPI.Business.Queries
 
         public async Task<GetPersonByNameResult> Handle(GetPersonByName request, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new BadHttpRequestException("Name is required.", StatusCodes.Status400BadRequest);
+
             var person = await _context.People
                 .AsNoTracking()
                 .Where(p => p.Name == request.Name)

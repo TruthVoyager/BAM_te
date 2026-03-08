@@ -22,16 +22,23 @@ namespace StargateAPI.Business.Commands
 
         public async Task<UpdatePersonResult> Handle(UpdatePerson request, CancellationToken cancellationToken)
         {
-            var person = await _context.People.FirstOrDefaultAsync(p => p.Name == request.CurrentName, cancellationToken);
+            if (string.IsNullOrWhiteSpace(request.CurrentName))
+                throw new InvalidOperationException("Current name is required.");
+
+            var trimmedNewName = request.NewName?.Trim() ?? string.Empty;
+            if (trimmedNewName.Length == 0)
+                throw new InvalidOperationException("New name is required.");
+
+            var person = await _context.People.FirstOrDefaultAsync(p => p.Name == request.CurrentName.Trim(), cancellationToken);
             if (person is null)
                 throw new InvalidOperationException("Person not found.");
 
-            if (request.NewName.Trim() != request.CurrentName)
+            if (trimmedNewName != request.CurrentName.Trim())
             {
-                var exists = await _context.People.AnyAsync(p => p.Name == request.NewName.Trim(), cancellationToken);
+                var exists = await _context.People.AnyAsync(p => p.Name == trimmedNewName, cancellationToken);
                 if (exists)
                     throw new InvalidOperationException("A person with that name already exists.");
-                person.Name = request.NewName.Trim();
+                person.Name = trimmedNewName;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
