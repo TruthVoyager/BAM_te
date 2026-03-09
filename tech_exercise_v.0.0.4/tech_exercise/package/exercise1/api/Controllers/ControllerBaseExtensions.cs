@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace StargateAPI.Controllers
 {
@@ -42,6 +43,17 @@ namespace StargateAPI.Controllers
                     Message = invOp.Message,
                     Success = false,
                     ResponseCode = code
+                };
+            }
+
+            if (ex is DbUpdateException dbEx &&
+                dbEx.InnerException?.Message?.Contains("UNIQUE constraint failed: Person.Name", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return new BaseResponse
+                {
+                    Message = "A person with this name already exists.",
+                    Success = false,
+                    ResponseCode = (int)HttpStatusCode.Conflict
                 };
             }
 

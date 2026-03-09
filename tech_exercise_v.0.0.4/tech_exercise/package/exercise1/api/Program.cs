@@ -33,6 +33,13 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<StargateContext>();
+    await context.Database.MigrateAsync();
+    await DataSeeder.SeedIfEmptyAsync(context);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
