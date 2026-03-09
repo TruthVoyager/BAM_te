@@ -4,6 +4,7 @@ import { PersonService } from '../../shared/services/person.service';
 import { PersonAstronaut } from '../../shared/models/person-astronaut';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
 import { PersonCardComponent } from '../../components/person-card/person-card.component';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 @Component({
   selector: 'app-view-people',
@@ -30,7 +31,7 @@ export class ViewPeopleComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.message ?? 'Failed to load people';
+        this.error = getErrorMessage(err, 'Failed to load people');
       },
     });
   }

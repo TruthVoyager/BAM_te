@@ -69,10 +69,6 @@ body {
   display: none;
 }
 
-.page-actions__primary {
-  
-}
-
 .page-actions__primary a,
 .page-actions__primary button {
   padding: 0.5rem 1rem;

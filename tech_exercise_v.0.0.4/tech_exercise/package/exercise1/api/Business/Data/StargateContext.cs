@@ -47,7 +47,7 @@ namespace StargateAPI.Business.Data
                     {
                         Id = 1,
                         PersonId = 1,
-                        CareerStartDate = DateTime.Now
+                        CareerStartDate = DateTime.UtcNow
                     }
                 );
 
@@ -57,7 +57,7 @@ namespace StargateAPI.Business.Data
                     {
                         Id = 1,
                         PersonId = 1,
-                        DutyStartDate = DateTime.Now,
+                        DutyStartDate = DateTime.UtcNow,
                         DutyTitle = "Commander",
                         RankId = 1
                     }

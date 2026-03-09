@@ -37,7 +37,6 @@
 
 .person-card__star {
   display: inline-flex;
-  color: #c9c9c9;
 }
 
 .person-card__star--filled .person-card__star-svg {

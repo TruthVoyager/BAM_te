@@ -7,9 +7,11 @@ import { takeUntil } from 'rxjs/operators';
 import { PersonService } from '../../shared/services/person.service';
 import { RankService } from '../../shared/services/rank.service';
 import { AstronautDutyService } from '../../shared/services/astronaut-duty.service';
+import { GetAstronautDutiesByNameResult } from '../../shared/models/get-astronaut-duties-by-name-result';
 import { Rank } from '../../shared/models/rank';
 import { AstronautDuty } from '../../shared/models/astronaut-duty';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 type DutySectionState = 'readonly' | 'newDuty' | 'retire' | 'promote';
 
@@ -68,12 +70,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loadingRanks = false;
-        const body = err?.error;
-        const msg = body?.message ?? body?.detail ?? err?.message ?? err?.statusText;
-        const status = err?.status;
-        this.error = status
-          ? `Failed to load ranks (${status}${msg ? ': ' + msg : ''})`
-          : 'Failed to load ranks. Is the API running at http://localhost:5204?';
+        this.error = getErrorMessage(err, 'Failed to load ranks. Is the API running?');
       },
     });
 
@@ -98,13 +95,13 @@ export class AddPersonComponent implements OnInit, OnDestroy {
       this.loadingPerson = true;
       this.error = null;
       this.astronautDutyService.getDutiesByName(decodedName).subscribe({
-        next: (res) => {
+        next: (res: GetAstronautDutiesByNameResult) => {
           this.loadingPerson = false;
-          const success = (res as { success?: boolean }).success !== false;
-          const person = (res as { person?: { name: string; careerStartDate?: string | null } }).person;
-          const duties = (res as { astronautDuties?: AstronautDuty[] }).astronautDuties ?? [];
+          const success = res.success !== false;
+          const person = res.person;
+          const duties = res.astronautDuties ?? [];
           if (!success || !person) {
-            this.error = (res as { message?: string }).message ?? 'Person not found';
+            this.error = res.message ?? 'Person not found';
             return;
           }
           this.name = person.name;
@@ -116,7 +113,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.loadingPerson = false;
-          this.error = err?.error?.message ?? 'Failed to load person';
+          this.error = getErrorMessage(err, 'Failed to load person');
         },
       });
     } else {
@@ -251,7 +248,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
               },
               error: (err) => {
                 this.submitting = false;
-                this.error = err?.error?.message ?? 'Person created but failed to add duty';
+                this.error = getErrorMessage(err, 'Person created but failed to add duty');
               },
             });
         } else {
@@ -261,7 +258,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.submitting = false;
-        this.error = err?.error?.message ?? 'Failed to create person';
+        this.error = getErrorMessage(err, 'Failed to create person');
       },
     });
   }
@@ -313,7 +310,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
               this.submitting = false;
-              this.error = err?.error?.message ?? 'Person updated but duty failed';
+              this.error = getErrorMessage(err, 'Person updated but duty failed');
             },
           });
         } else {
@@ -323,7 +320,7 @@ export class AddPersonComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.submitting = false;
-        this.error = err?.error?.message ?? 'Failed to update person';
+        this.error = getErrorMessage(err, 'Failed to update person');
       },
     });
   }

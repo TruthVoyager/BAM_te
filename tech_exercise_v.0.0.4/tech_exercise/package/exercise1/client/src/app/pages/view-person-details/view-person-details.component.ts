@@ -5,6 +5,7 @@ import { AstronautDuty } from '../../shared/models/astronaut-duty';
 import { PersonAstronaut } from '../../shared/models/person-astronaut';
 import { DutyCardComponent } from '../../components/duty-card/duty-card.component';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
+import { getErrorMessage } from '../../shared/get-error-message';
 
 @Component({
   selector: 'app-view-person-details',
@@ -45,7 +46,7 @@ export class ViewPersonDetailsComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.message ?? 'Failed to load person details';
+        this.error = getErrorMessage(err, 'Failed to load person details');
       },
     });
   }

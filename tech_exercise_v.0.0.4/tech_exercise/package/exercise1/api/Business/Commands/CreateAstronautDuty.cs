@@ -7,6 +7,13 @@ using StargateAPI.Controllers;
 
 namespace StargateAPI.Business.Commands
 {
+    /// <summary>Normalizes a date to UTC midnight for consistent storage and comparison.</summary>
+    internal static class DateUtc
+    {
+        public static DateTime ToUtcDate(DateTime value) =>
+            new DateTime(value.Year, value.Month, value.Day, 0, 0, 0, DateTimeKind.Utc);
+    }
+
     public class CreateAstronautDuty : IRequest<CreateAstronautDutyResult>
     {
         public required string Name { get; set; }
@@ -31,9 +38,9 @@ namespace StargateAPI.Business.Commands
         {
             var person = await _context.People.AsNoTracking().FirstOrDefaultAsync(z => z.Name == request.Name, cancellationToken);
 
-            if (person is null) throw new BadHttpRequestException("Bad Request");
+            if (person is null) throw new BadHttpRequestException("Person not found.", StatusCodes.Status400BadRequest);
 
-            var requestDate = request.DutyStartDate.Date;
+            var requestDate = DateUtc.ToUtcDate(request.DutyStartDate);
             var nextDay = requestDate.AddDays(1);
             var verifyNoDuplicateForPerson = await _context.AstronautDuties
                 .AsNoTracking()
@@ -66,9 +73,9 @@ namespace StargateAPI.Business.Commands
             if (!rankExists)
                 throw new BadHttpRequestException("The selected rank was not found.", StatusCodes.Status400BadRequest);
 
-            var requestedStart = request.DutyStartDate.Date;
-            var today = DateTime.Today;
-            if (requestedStart > today)
+            var requestedStart = DateUtc.ToUtcDate(request.DutyStartDate);
+            var todayUtc = DateTime.UtcNow.Date;
+            if (requestedStart > todayUtc)
                 throw new BadHttpRequestException(
                     "A duty cannot have a start date in the future. The start date must be today or earlier.",
                     StatusCodes.Status400BadRequest);
@@ -84,17 +91,17 @@ namespace StargateAPI.Business.Commands
                 astronautDetail = new AstronautDetail
                 {
                     PersonId = person.Id,
-                    CareerStartDate = request.DutyStartDate.Date
+                    CareerStartDate = requestedStart
                 };
-                if (request.DutyTitle == "RETIRED")
-                    astronautDetail.CareerEndDate = request.DutyStartDate.AddDays(-1).Date;
+                if (string.Equals(request.DutyTitle, "RETIRED", StringComparison.OrdinalIgnoreCase))
+                    astronautDetail.CareerEndDate = requestedStart.AddDays(-1);
 
                 await _context.AstronautDetails.AddAsync(astronautDetail, cancellationToken);
             }
             else
             {
-                if (request.DutyTitle == "RETIRED")
-                    astronautDetail.CareerEndDate = request.DutyStartDate.AddDays(-1).Date;
+                if (string.Equals(request.DutyTitle, "RETIRED", StringComparison.OrdinalIgnoreCase))
+                    astronautDetail.CareerEndDate = requestedStart.AddDays(-1);
                 _context.AstronautDetails.Update(astronautDetail);
             }
 
@@ -105,18 +112,20 @@ namespace StargateAPI.Business.Commands
 
             if (currentDuty != null)
             {
-                var currentStart = currentDuty.DutyStartDate.Date;
+                var currentStart = currentDuty.DutyStartDate.Kind == DateTimeKind.Utc
+                    ? currentDuty.DutyStartDate.Date
+                    : DateUtc.ToUtcDate(currentDuty.DutyStartDate);
                 var minNewStartDate = currentStart.AddDays(1);
-                if (request.DutyStartDate.Date < minNewStartDate)
+                if (requestedStart < minNewStartDate)
                 {
-                    var message = currentStart == DateTime.Today
+                    var message = currentStart == todayUtc
                         ? "The current duty was assigned today. A new duty or retirement cannot be assigned until tomorrow."
                         : "The new duty cannot start on the same day as the current duty or any date before it. " +
-                          $"Current duty started {currentStart:yyyy-MM-dd}; the new duty must start on or after {minNewStartDate:yyyy-MM-dd}.";
+                          $"Current duty started {currentStart:yyyy-MM-dd} UTC; the new duty must start on or after {minNewStartDate:yyyy-MM-dd} UTC.";
                     throw new BadHttpRequestException(message, StatusCodes.Status400BadRequest);
                 }
 
-                currentDuty.DutyEndDate = request.DutyStartDate.AddDays(-1).Date;
+                currentDuty.DutyEndDate = requestedStart.AddDays(-1);
                 _context.AstronautDuties.Update(currentDuty);
             }
 
@@ -125,7 +134,7 @@ namespace StargateAPI.Business.Commands
                 PersonId = person.Id,
                 RankId = await GetRankIdForNewDutyAsync(request.RankId, hasAnyDuty, request.DutyTitle, cancellationToken),
                 DutyTitle = request.DutyTitle,
-                DutyStartDate = request.DutyStartDate.Date,
+                DutyStartDate = requestedStart,
                 DutyEndDate = null
             };
 
