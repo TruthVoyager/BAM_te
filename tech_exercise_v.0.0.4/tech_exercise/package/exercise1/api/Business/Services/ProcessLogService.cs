@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 
 namespace StargateAPI.Business.Services

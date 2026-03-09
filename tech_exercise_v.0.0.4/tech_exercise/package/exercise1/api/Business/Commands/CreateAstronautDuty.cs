@@ -1,6 +1,5 @@
 using MediatR;
 using MediatR.Pipeline;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Controllers;
