@@ -1,13 +1,13 @@
-using FluentAssertions;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Queries;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Queries;
 
+[TestFixture]
 public class GetAstronautDutiesByNameTests
 {
-    [Fact]
+    [Test]
     public async Task Handle_WhenPersonNotFound_ReturnsNullPersonAndEmptyDuties()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -15,11 +15,11 @@ public class GetAstronautDutiesByNameTests
 
         var result = await handler.Handle(new GetAstronautDutiesByName { Name = "Nobody" }, CancellationToken.None);
 
-        result.Person.Should().BeNull();
-        result.AstronautDuties.Should().NotBeNull().And.BeEmpty();
+        Assert.That(result.Person, Is.Null);
+        Assert.That(result.AstronautDuties, Is.Not.Null.And.Empty);
     }
 
-    [Fact]
+    [Test]
     public async Task Handle_WhenPersonExists_ReturnsPersonAndDutiesOrderedByStartDateDescending()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -49,16 +49,16 @@ public class GetAstronautDutiesByNameTests
         var handler = new GetAstronautDutiesByNameHandler(context);
         var result = await handler.Handle(new GetAstronautDutiesByName { Name = "DutyPerson" }, CancellationToken.None);
 
-        result.Person.Should().NotBeNull();
-        result.Person!.Name.Should().Be("DutyPerson");
-        result.Person.CurrentRank.Should().Be("Sergeant");
-        result.Person.CurrentDutyTitle.Should().Be("Second");
+        Assert.That(result.Person, Is.Not.Null);
+        Assert.That(result.Person!.Name, Is.EqualTo("DutyPerson"));
+        Assert.That(result.Person.CurrentRank, Is.EqualTo("Sergeant"));
+        Assert.That(result.Person.CurrentDutyTitle, Is.EqualTo("Second"));
 
-        result.AstronautDuties.Should().HaveCount(2);
-        result.AstronautDuties[0].DutyTitle.Should().Be("Second");
-        result.AstronautDuties[0].DutyEndDate.Should().BeNull();
-        result.AstronautDuties[1].DutyTitle.Should().Be("First");
-        result.AstronautDuties[1].DutyEndDate.Should().NotBeNull();
-        result.AstronautDuties[1].RankLevel.Should().Be(1);
+        Assert.That(result.AstronautDuties, Has.Count.EqualTo(2));
+        Assert.That(result.AstronautDuties[0].DutyTitle, Is.EqualTo("Second"));
+        Assert.That(result.AstronautDuties[0].DutyEndDate, Is.Null);
+        Assert.That(result.AstronautDuties[1].DutyTitle, Is.EqualTo("First"));
+        Assert.That(result.AstronautDuties[1].DutyEndDate, Is.Not.Null);
+        Assert.That(result.AstronautDuties[1].RankLevel, Is.EqualTo(1));
     }
 }

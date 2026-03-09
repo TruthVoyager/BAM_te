@@ -1,15 +1,15 @@
-using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using StargateAPI.Business.Data;
 using StargateAPI.Controllers;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Controllers;
 
+[TestFixture]
 public class RankControllerTests
 {
-    [Fact]
+    [Test]
     public async Task GetRanks_WhenRanksExist_ReturnsOkWithOrderedRanks()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -18,13 +18,15 @@ public class RankControllerTests
 
         var result = await controller.GetRanks();
 
-        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        var ranks = okResult.Value.Should().BeAssignableTo<List<Rank>>().Subject;
-        ranks.Should().HaveCount(5);
-        ranks.Select(r => r.Level).Should().BeInAscendingOrder();
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        var okResult = (OkObjectResult)result;
+        Assert.That(okResult.Value, Is.InstanceOf<List<Rank>>());
+        var ranks = (List<Rank>)okResult.Value!;
+        Assert.That(ranks, Has.Count.EqualTo(5));
+        Assert.That(ranks.Select(r => r.Level).ToList(), Is.Ordered.Ascending);
     }
 
-    [Fact]
+    [Test]
     public async Task GetRanks_WhenNoRanks_ReturnsOkWithEmptyList()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -32,8 +34,10 @@ public class RankControllerTests
 
         var result = await controller.GetRanks();
 
-        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        var ranks = okResult.Value.Should().BeAssignableTo<List<Rank>>().Subject;
-        ranks.Should().BeEmpty();
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        var okResult = (OkObjectResult)result;
+        Assert.That(okResult.Value, Is.InstanceOf<List<Rank>>());
+        var ranks = (List<Rank>)okResult.Value!;
+        Assert.That(ranks, Is.Empty);
     }
 }

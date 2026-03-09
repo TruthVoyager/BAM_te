@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,10 +5,11 @@ using StargateAPI.Business.Commands;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Services;
 using StargateAPI.Controllers;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Controllers;
 
+[TestFixture]
 public class PersonControllerTests
 {
     private static IServiceProvider BuildServiceProvider(StargateContext context)
@@ -36,7 +36,7 @@ public class PersonControllerTests
         };
     }
 
-    [Fact]
+    [Test]
     public async Task GetPeople_ReturnsOkWithList()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -45,11 +45,12 @@ public class PersonControllerTests
 
         var result = await controller.GetPeople();
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task GetPersonByName_WhenExists_ReturnsOk()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -59,11 +60,12 @@ public class PersonControllerTests
 
         var result = await controller.GetPersonByName("TestPerson");
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task CreatePerson_WhenValid_ReturnsOkWithId()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -72,11 +74,12 @@ public class PersonControllerTests
 
         var result = await controller.CreatePerson("NewPerson");
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task UpdatePerson_WhenValid_ReturnsOk()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -86,11 +89,12 @@ public class PersonControllerTests
 
         var result = await controller.UpdatePerson("Before", "After");
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task CreatePerson_WhenDuplicateName_Returns409()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -101,11 +105,12 @@ public class PersonControllerTests
 
         var result = await controller.CreatePerson("Existing");
 
-        var obj = result.Should().BeOfType<ObjectResult>().Subject;
-        obj.StatusCode.Should().Be(409);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var obj = (ObjectResult)result;
+        Assert.That(obj.StatusCode, Is.EqualTo(409));
     }
 
-    [Fact]
+    [Test]
     public async Task UpdatePerson_WhenPersonNotFound_Returns404()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -115,11 +120,12 @@ public class PersonControllerTests
 
         var result = await controller.UpdatePerson("NoSuchPerson", "NewName");
 
-        var obj = result.Should().BeOfType<ObjectResult>().Subject;
-        obj.StatusCode.Should().Be(404);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var obj = (ObjectResult)result;
+        Assert.That(obj.StatusCode, Is.EqualTo(404));
     }
 
-    [Fact]
+    [Test]
     public async Task UpdatePerson_WhenNewNameAlreadyExists_Returns409()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -131,7 +137,8 @@ public class PersonControllerTests
 
         var result = await controller.UpdatePerson("PersonA", "PersonB");
 
-        var obj = result.Should().BeOfType<ObjectResult>().Subject;
-        obj.StatusCode.Should().Be(409);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var obj = (ObjectResult)result;
+        Assert.That(obj.StatusCode, Is.EqualTo(409));
     }
 }

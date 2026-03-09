@@ -1,13 +1,13 @@
-using FluentAssertions;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Queries;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Queries;
 
+[TestFixture]
 public class GetPersonByNameTests
 {
-    [Fact]
+    [Test]
     public async Task Handle_WhenPersonNotFound_ReturnsNullPerson()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -15,10 +15,10 @@ public class GetPersonByNameTests
 
         var result = await handler.Handle(new GetPersonByName { Name = "Nobody" }, CancellationToken.None);
 
-        result.Person.Should().BeNull();
+        Assert.That(result.Person, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public async Task Handle_WhenPersonExists_ReturnsPersonWithCurrentDuty()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -38,9 +38,9 @@ public class GetPersonByNameTests
         var handler = new GetPersonByNameHandler(context);
         var result = await handler.Handle(new GetPersonByName { Name = "Jane" }, CancellationToken.None);
 
-        result.Person.Should().NotBeNull();
-        result.Person!.Name.Should().Be("Jane");
-        result.Person.CurrentRank.Should().Be("Captain");
-        result.Person.CurrentDutyTitle.Should().Be("Captain");
+        Assert.That(result.Person, Is.Not.Null);
+        Assert.That(result.Person!.Name, Is.EqualTo("Jane"));
+        Assert.That(result.Person.CurrentRank, Is.EqualTo("Captain"));
+        Assert.That(result.Person.CurrentDutyTitle, Is.EqualTo("Captain"));
     }
 }

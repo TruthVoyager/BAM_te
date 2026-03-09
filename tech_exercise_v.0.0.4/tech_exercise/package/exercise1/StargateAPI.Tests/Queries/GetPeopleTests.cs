@@ -1,13 +1,13 @@
-using FluentAssertions;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Queries;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Queries;
 
+[TestFixture]
 public class GetPeopleTests
 {
-    [Fact]
+    [Test]
     public async Task Handle_WhenNoPeople_ReturnsEmptyList()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -15,10 +15,10 @@ public class GetPeopleTests
 
         var result = await handler.Handle(new GetPeople(), CancellationToken.None);
 
-        result.People.Should().NotBeNull().And.BeEmpty();
+        Assert.That(result.People, Is.Not.Null.And.Empty);
     }
 
-    [Fact]
+    [Test]
     public async Task Handle_WhenPeopleExist_ReturnsAllWithCurrentDutyDerived()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -39,15 +39,15 @@ public class GetPeopleTests
         var handler = new GetPeopleHandler(context);
         var result = await handler.Handle(new GetPeople(), CancellationToken.None);
 
-        result.People.Should().HaveCount(2);
+        Assert.That(result.People, Has.Count.EqualTo(2));
         var alpha = result.People.First(p => p.Name == "Alpha");
-        alpha.PersonId.Should().Be(p1.Id);
-        alpha.CareerStartDate.Should().NotBeNull();
-        alpha.CurrentRank.Should().Be("Sergeant");
-        alpha.CurrentDutyTitle.Should().Be("Sergeant");
+        Assert.That(alpha.PersonId, Is.EqualTo(p1.Id));
+        Assert.That(alpha.CareerStartDate, Is.Not.Null);
+        Assert.That(alpha.CurrentRank, Is.EqualTo("Sergeant"));
+        Assert.That(alpha.CurrentDutyTitle, Is.EqualTo("Sergeant"));
 
         var beta = result.People.First(p => p.Name == "Beta");
-        beta.CurrentRank.Should().BeEmpty();
-        beta.CurrentDutyTitle.Should().BeEmpty();
+        Assert.That(beta.CurrentRank, Is.Empty);
+        Assert.That(beta.CurrentDutyTitle, Is.Empty);
     }
 }

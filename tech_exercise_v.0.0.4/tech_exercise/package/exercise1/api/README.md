@@ -68,6 +68,8 @@ By default the API listens on the URLs shown in the console (e.g. `http://localh
 
 Tests live in the **StargateAPI.Tests** project (sibling of `api`). Run them from the **exercise1** folder or from the test project folder.
 
+**If you get build errors** (e.g. "Could not copy ... StargateAPI.exe ... file is being used by another process"): **stop the running API** (the StargateAPI process). The test run builds the API project first; it cannot overwrite the exe while the API is running.
+
 ### Run tests (no coverage)
 
 From the **exercise1** folder:

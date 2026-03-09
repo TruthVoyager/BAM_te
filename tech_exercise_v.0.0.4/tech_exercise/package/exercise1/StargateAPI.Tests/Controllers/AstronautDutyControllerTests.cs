@@ -1,19 +1,24 @@
-using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 using StargateAPI.Business.Commands;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Services;
 using StargateAPI.Controllers;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Controllers;
 
+[TestFixture]
 public class AstronautDutyControllerTests
 {
-    private static IServiceProvider BuildServiceProvider(StargateContext context)
+    private static IServiceProvider BuildServiceProvider(StargateContext context, Mock<IProcessLogService>? processLogMock = null)
     {
+        var processLog = processLogMock ?? CreateMockProcessLogService();
+        var logger = new Mock<ILogger<AstronautDutyController>>();
+
         var services = new ServiceCollection();
         services.AddSingleton(context);
         services.AddLogging();
@@ -22,9 +27,19 @@ public class AstronautDutyControllerTests
             cfg.RegisterServicesFromAssembly(typeof(CreatePerson).Assembly);
             cfg.AddRequestPreProcessor<CreateAstronautDutyPreProcessor>();
         });
-        services.AddSingleton<IProcessLogService>(NullProcessLogService.Instance);
+        services.AddSingleton<IProcessLogService>(processLog.Object);
+        services.AddSingleton<ILogger<AstronautDutyController>>(logger.Object);
         services.AddSingleton<AstronautDutyController>();
         return services.BuildServiceProvider();
+    }
+
+    private static Mock<IProcessLogService> CreateMockProcessLogService()
+    {
+        var mock = new Mock<IProcessLogService>();
+        mock
+            .Setup(s => s.LogExceptionAsync(It.IsAny<Exception>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        return mock;
     }
 
     private static void SetControllerContext(ControllerBase controller)
@@ -35,7 +50,7 @@ public class AstronautDutyControllerTests
         };
     }
 
-    [Fact]
+    [Test]
     public async Task GetAstronautDutiesByName_ReturnsOk()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -45,11 +60,12 @@ public class AstronautDutyControllerTests
 
         var result = await controller.GetAstronautDutiesByName("DutyPerson");
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task CreateAstronautDuty_WhenValid_ReturnsOk()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -66,11 +82,12 @@ public class AstronautDutyControllerTests
             DutyStartDate = DateTime.Today
         });
 
-        var ok = result.Should().BeOfType<ObjectResult>().Subject;
-        ok.StatusCode.Should().Be(200);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var ok = (ObjectResult)result;
+        Assert.That(ok.StatusCode, Is.EqualTo(200));
     }
 
-    [Fact]
+    [Test]
     public async Task CreateAstronautDuty_WhenPersonNotFound_Returns400()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -87,11 +104,12 @@ public class AstronautDutyControllerTests
             DutyStartDate = DateTime.Today
         });
 
-        var obj = result.Should().BeOfType<ObjectResult>().Subject;
-        obj.StatusCode.Should().Be(400);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var obj = (ObjectResult)result;
+        Assert.That(obj.StatusCode, Is.EqualTo(400));
     }
 
-    [Fact]
+    [Test]
     public async Task CreateAstronautDuty_WhenDuplicateDuty_Returns400()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -111,7 +129,8 @@ public class AstronautDutyControllerTests
         await controller.CreateAstronautDuty(request);
         var result = await controller.CreateAstronautDuty(request);
 
-        var obj = result.Should().BeOfType<ObjectResult>().Subject;
-        obj.StatusCode.Should().Be(400);
+        Assert.That(result, Is.InstanceOf<ObjectResult>());
+        var obj = (ObjectResult)result;
+        Assert.That(obj.StatusCode, Is.EqualTo(400));
     }
 }

@@ -1,14 +1,14 @@
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using StargateAPI.Business.Data;
 using StargateAPI.Business.Services;
-using Xunit;
+using NUnit.Framework;
 
 namespace StargateAPI.Tests.Services;
 
+[TestFixture]
 public class ProcessLogServiceTests
 {
-    [Fact]
+    [Test]
     public async Task LogSuccessAsync_PersistsLogToDatabase()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -17,15 +17,15 @@ public class ProcessLogServiceTests
         await sut.LogSuccessAsync("/api/Person", "GET", 200, "OK");
 
         var log = await context.ProcessLogs.AsNoTracking().SingleAsync();
-        log.Level.Should().Be("Success");
-        log.RequestPath.Should().Be("/api/Person");
-        log.RequestMethod.Should().Be("GET");
-        log.StatusCode.Should().Be(200);
-        log.Message.Should().Be("OK");
-        log.ExceptionMessage.Should().BeNull();
+        Assert.That(log.Level, Is.EqualTo("Success"));
+        Assert.That(log.RequestPath, Is.EqualTo("/api/Person"));
+        Assert.That(log.RequestMethod, Is.EqualTo("GET"));
+        Assert.That(log.StatusCode, Is.EqualTo(200));
+        Assert.That(log.Message, Is.EqualTo("OK"));
+        Assert.That(log.ExceptionMessage, Is.Null);
     }
 
-    [Fact]
+    [Test]
     public async Task LogSuccessAsync_WhenMessageNull_UsesDefaultMessage()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -34,10 +34,10 @@ public class ProcessLogServiceTests
         await sut.LogSuccessAsync("/test", "POST", 201, null);
 
         var log = await context.ProcessLogs.AsNoTracking().SingleAsync();
-        log.Message.Should().Be("Request completed successfully.");
+        Assert.That(log.Message, Is.EqualTo("Request completed successfully."));
     }
 
-    [Fact]
+    [Test]
     public async Task LogExceptionAsync_PersistsExceptionToDatabase()
     {
         var context = TestContextFactory.CreateInMemoryContext();
@@ -47,13 +47,13 @@ public class ProcessLogServiceTests
         await sut.LogExceptionAsync(ex, "/api/Person/John", "GET", 404);
 
         var log = await context.ProcessLogs.AsNoTracking().SingleAsync();
-        log.Level.Should().Be("Error");
-        log.RequestPath.Should().Be("/api/Person/John");
-        log.RequestMethod.Should().Be("GET");
-        log.StatusCode.Should().Be(404);
-        log.Message.Should().Be("Person not found.");
-        log.ExceptionMessage.Should().Be("Person not found.");
+        Assert.That(log.Level, Is.EqualTo("Error"));
+        Assert.That(log.RequestPath, Is.EqualTo("/api/Person/John"));
+        Assert.That(log.RequestMethod, Is.EqualTo("GET"));
+        Assert.That(log.StatusCode, Is.EqualTo(404));
+        Assert.That(log.Message, Is.EqualTo("Person not found."));
+        Assert.That(log.ExceptionMessage, Is.EqualTo("Person not found."));
         if (ex.StackTrace is not null)
-            log.ExceptionStackTrace.Should().NotBeNullOrEmpty();
+            Assert.That(log.ExceptionStackTrace, Is.Not.Null.And.Not.Empty);
     }
 }
