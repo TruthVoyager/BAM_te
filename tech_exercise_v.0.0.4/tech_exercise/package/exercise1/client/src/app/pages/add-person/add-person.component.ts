@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PersonService } from '../../shared/services/person.service';
@@ -42,8 +42,6 @@ export class AddPersonComponent implements OnInit, OnDestroy {
   isAstronautReadonly = false;
 
   private readonly destroy$ = new Subject<void>();
-
-  @ViewChild('addPersonForm') addPersonFormRef: NgForm | null = null;
 
   constructor(
     private readonly location: Location,
@@ -146,7 +144,16 @@ export class AddPersonComponent implements OnInit, OnDestroy {
     if (this.submitting) return true;
     if (this.loadingRanks && (this.isDutyFieldsRequired || this.isPromoteRankRequired)) return true;
     if (this.dutySectionState === 'promote' && (this.rankId == null || this.rankId === this.currentDuty?.rankId)) return true;
-    return this.addPersonFormRef?.invalid ?? true;
+
+    // Mirror required-field rules without relying on ViewChild timing.
+    if (!this.name?.trim()) return true;
+
+    if (this.isDutyFieldsRequired) {
+      if (!this.dutyTitle?.trim() || this.rankId == null) return true;
+      if (this.editMode && this.dutySectionState === 'newDuty' && !this.dutyStartDate) return true;
+    }
+
+    return false;
   }
 
   get displayDutyTitle(): string {
