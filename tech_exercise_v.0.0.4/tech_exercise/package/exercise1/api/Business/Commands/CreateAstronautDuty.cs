@@ -15,11 +15,11 @@ namespace StargateAPI.Business.Commands
 
     public class CreateAstronautDuty : IRequest<CreateAstronautDutyResult>
     {
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public int RankId { get; set; }
 
-        public required string DutyTitle { get; set; }
+        public string DutyTitle { get; set; } = string.Empty;
 
         public DateTime DutyStartDate { get; set; }
     }

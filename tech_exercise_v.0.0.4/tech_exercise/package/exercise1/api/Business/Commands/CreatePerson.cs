@@ -8,7 +8,7 @@ namespace StargateAPI.Business.Commands
 {
     public class CreatePerson : IRequest<CreatePersonResult>
     {
-        public required string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
     }
 
     public class CreatePersonPreProcessor : IRequestPreProcessor<CreatePerson>

@@ -7,8 +7,8 @@ namespace StargateAPI.Business.Commands
 {
     public class UpdatePerson : IRequest<UpdatePersonResult>
     {
-        public required string CurrentName { get; set; } = string.Empty;
-        public required string NewName { get; set; } = string.Empty;
+        public string CurrentName { get; set; } = string.Empty;
+        public string NewName { get; set; } = string.Empty;
     }
 
     public class UpdatePersonHandler : IRequestHandler<UpdatePerson, UpdatePersonResult>
